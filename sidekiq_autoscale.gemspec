@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.version     = SidekiqAutoscale::VERSION
   spec.authors     = ["Steven Allen"]
   spec.email       = ["sallen@tractionguest.com"]
-  spec.homepage    = "TODO"
+  spec.homepage    = "https://github.com/tractionguest/sidekiq_autoscaling"
   spec.summary     = "A simple gem to handle Sidekiq autoscaling."
   spec.description = "A simple gem to handle Sidekiq autoscaling."
   spec.license     = "MIT"
