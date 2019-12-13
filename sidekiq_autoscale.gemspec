@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "redlock", "~> 1"
 
   spec.add_development_dependency "sqlite3"
+  spec.add_development_dependency "rubocop"
 end
