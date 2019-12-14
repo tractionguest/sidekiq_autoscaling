@@ -20,6 +20,8 @@ RSpec.describe SidekiqAutoscale::Config::FileLoader do
     context "with a valid config file" do
       before { file_loader }
 
+      it { byebug }
+
       it { expect(SidekiqAutoscale.config.sns_config[:endpoint]).to eq "http://localhost:4575" }
     end
   end

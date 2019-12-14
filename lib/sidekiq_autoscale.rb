@@ -10,6 +10,5 @@ module SidekiqAutoscale
     def configure
       yield config
     end
-    puts "Loaded SidekiqAutoscale"
   end
 end

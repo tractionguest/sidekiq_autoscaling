@@ -1,0 +1,7 @@
+# frozen_string_literal: true
+
+SidekiqAutoscale.configure do |config|
+  config.cache = Rails.cache
+  config.logger = Rails.logger
+  config.redis = # $redis # This needs to be a real Redis client
+end
