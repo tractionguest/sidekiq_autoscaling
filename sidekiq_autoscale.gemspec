@@ -1,4 +1,6 @@
-$:.push File.expand_path("lib", __dir__)
+# frozen_string_literal: true
+
+$LOAD_PATH.push File.expand_path("lib", __dir__)
 
 # Maintain your gem's version:
 require "sidekiq_autoscale/version"
@@ -25,10 +27,12 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
-  spec.add_dependency "rails", "~> 4"
   spec.add_dependency "platform-api", "~> 2.2"
+  spec.add_dependency "rails", "~> 4"
   spec.add_dependency "redlock", "~> 1"
+  spec.add_dependency "sidekiq"
 
-  spec.add_development_dependency "sqlite3"
+  spec.add_development_dependency "fakeredis"
   spec.add_development_dependency "rubocop"
+  spec.add_development_dependency "sqlite3"
 end

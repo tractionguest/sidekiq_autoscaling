@@ -1,6 +1,8 @@
-class SidekiqScaling::NilAdapter
+# frozen_string_literal: true
+
+class SidekiqAutoscaling::NilAdapter
   def initialize
-    @sidekiq_adapter = SidekiqScaling::SidekiqInterface
+    @sidekiq_adapter = SidekiqAutoscaling::SidekiqInterface
   end
 
   def worker_count
