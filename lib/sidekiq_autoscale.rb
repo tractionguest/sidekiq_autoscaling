@@ -1,6 +1,16 @@
 # frozen_string_literal: true
 
 require "sidekiq_autoscale/railtie"
+require "sidekiq"
+require "sidekiq/api"
+require "sidekiq_autoscale/exception"
+require "sidekiq_autoscale/strategies/base_scaling"
+require "sidekiq_autoscale/strategies/delay_scaling"
+require "sidekiq_autoscale/strategies/linear_scaling"
+require "sidekiq_autoscale/strategies/oldest_job_scaling"
+require "sidekiq_autoscale/adapters/nil_adapter"
+require "sidekiq_autoscale/adapters/heroku_adapter"
+
 require "sidekiq_autoscale/config/shared_configs"
 
 module SidekiqAutoscale

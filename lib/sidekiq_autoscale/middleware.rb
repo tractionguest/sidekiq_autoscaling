@@ -2,15 +2,10 @@
 
 module SidekiqAutoscale
   class Middleware
-    STRATEGIES = SidekiqAutoscale::BaseScaling.subclasses.freeze
-    MIN_AUTOSCALING_INTERVAL = 5.minutes
     SCALING_API_CALL_LOCK_TIME = 5_000
-
     LAST_SCALED_AT_EVENT_KEY = "sidekiq_autoscaling:last_scaled_at"
     SCALING_LOCK_KEY = "sidekiq_autoscaling:scaling_lock"
-
     LOG_TAG = "[SIDEKIQ_SCALE][SCALING_EVENT]"
-
     WORKER_COUNT_KEY = "sidekiq_autoscaling/current_worker_count"
 
     def initialize
@@ -22,7 +17,7 @@ module SidekiqAutoscale
       @max_workers = max_workers
       @strategy.sidekiq_interface = @sidekiq_interface
       @scale_by = scale_by
-      Rails.logger.info <<~LOG
+      SidekiqAutoscale.logger.info <<~LOG
         [SIDEKIQ_SCALE] Scaling strategy: #{@strategy.class.name}
         [SIDEKIQ_SCALE] Min workers: #{@min_workers}
         [SIDEKIQ_SCALE] Max workers: #{@max_workers}
@@ -47,8 +42,8 @@ module SidekiqAutoscale
         new_worker_count = worker_count + (@scale_by * @strategy.scaling_direction(job))
         set_worker_count(new_worker_count, event_id: job["jid"])
       rescue StandardError => e
-        Rails.logger.error(e)
-        Rails.logger.error(e.backtrace.join("\n"))
+        SidekiqAutoscale.logger.error(e)
+        SidekiqAutoscale.logger.error(e.backtrace.join("\n"))
         SidekiqAutoscale.on_error&.call(e)
       end
     end
@@ -57,7 +52,9 @@ module SidekiqAutoscale
 
     def self.strategy_picker(strat)
       strat_klass_name = SidekiqAutoscale::STRATEGIES.map(&:to_s).find {|i| i.end_with?("#{strat.to_s.camelize}Scaling") }
-      raise StandardError("#{LOG_TAG} Unknown scaling strategy: [#{strat.to_s.camelize}Scaling]") if strat_klass_name.nil?
+      if strat_klass_name.nil?
+        raise StandardError("#{LOG_TAG} Unknown scaling strategy: [#{strat.to_s.camelize}Scaling]")
+      end
 
       strat_klass_name.constantize
     end
@@ -70,12 +67,12 @@ module SidekiqAutoscale
 
     def set_worker_count(n, event_id: SecureRandom.hex)
       clamped = n.clamp(@min_workers, @max_workers)
-      Rails.logger.info <<~LOG
+      SidekiqAutoscale.logger.info <<~LOG
         #{LOG_TAG}[#{event_id}] --- START ---
         #{LOG_TAG}[#{event_id}] Current number of workers: #{worker_count}
         #{LOG_TAG}[#{event_id}] New number of workers: #{clamped}
       LOG
-      Rails.logger.debug <<~LOG
+      SidekiqAutoscale.logger.debug <<~LOG
         #{LOG_TAG}[#{event_id}] Min workers: #{@min_workers}
         #{LOG_TAG}[#{event_id}] Max workers: #{@max_workers}
         #{LOG_TAG}[#{event_id}] Unclamped target workers: #{n}
@@ -83,22 +80,22 @@ module SidekiqAutoscale
 
       @lock_manager.lock(SCALING_LOCK_KEY, SCALING_API_CALL_LOCK_TIME) do |locked|
         # Not awesome, but gotta handle the initial nil case
-        last_scaled_at = $redis.get(LAST_SCALED_AT_EVENT_KEY).to_f
-        Rails.logger.debug("#{LOG_TAG}[#{event_id}] Concurrency lock obtained: #{locked}")
-        Rails.logger.debug("#{LOG_TAG}[#{event_id}] Last scaled [#{Time.current.to_i - last_scaled_at.to_i}] seconds ago")
-        Rails.logger.debug("#{LOG_TAG}[#{event_id}] Scaling every [#{MIN_AUTOSCALING_INTERVAL}] seconds ago")
+        last_scaled_at = SidekiqAutoscale.redis_client.get(LAST_SCALED_AT_EVENT_KEY).to_f
+        SidekiqAutoscale.logger.debug("#{LOG_TAG}[#{event_id}] Concurrency lock obtained: #{locked}")
+        SidekiqAutoscale.logger.debug("#{LOG_TAG}[#{event_id}] Last scaled [#{Time.current.to_i - last_scaled_at.to_i}] seconds ago")
+        SidekiqAutoscale.logger.debug("#{LOG_TAG}[#{event_id}] Scaling every [#{SidekiqAutoscale.min_scaling_interval}] seconds")
 
-        if locked && (last_scaled_at < MIN_AUTOSCALING_INTERVAL.ago.to_f)
-          Rails.logger.debug("#{LOG_TAG}[#{event_id}] ***SCALING!!!***")
+        if locked && (last_scaled_at < SidekiqAutoscale.min_scaling_interval.seconds.ago.to_f)
+          SidekiqAutoscale.logger.debug("#{LOG_TAG}[#{event_id}] ***SCALING!!!***")
           @adapter.worker_count = clamped
           Rails.cache.delete(WORKER_COUNT_KEY)
-          $redis.set(LAST_SCALED_AT_EVENT_KEY, Time.current.to_f)
+          SidekiqAutoscale.redis_client.set(LAST_SCALED_AT_EVENT_KEY, Time.current.to_f)
         else
-          Rails.logger.debug("#{LOG_TAG}[#{event_id}] ***NOT SCALING***")
+          SidekiqAutoscale.logger.debug("#{LOG_TAG}[#{event_id}] ***NOT SCALING***")
         end
 
-        Rails.logger.debug("#{LOG_TAG}[#{event_id}] RELEASING LOCK #{locked}") if locked
-        Rails.logger.info("#{LOG_TAG}[#{event_id}] --- END ---")
+        SidekiqAutoscale.logger.debug("#{LOG_TAG}[#{event_id}] RELEASING LOCK #{locked}") if locked
+        SidekiqAutoscale.logger.info("#{LOG_TAG}[#{event_id}] --- END ---")
       end
     end
   end

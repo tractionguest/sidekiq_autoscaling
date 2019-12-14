@@ -10,6 +10,6 @@ class SidekiqAutoscale::NilAdapter
   end
 
   def worker_count=(n)
-    Rails.logger.debug("Attempting to autoscale sidekiq to #{n} workers")
+    SidekiqAutoscale.logger.debug("Attempting to autoscale sidekiq to #{n} workers")
   end
 end

@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-require 'redlock'
+require "redlock"
 
 module SidekiqAutoscale
   module Config
     module SharedConfigs
+      LOG_TAG = "[SIDEKIQ_SCALING]".freeze
+
       attr_writer :config
 
       def config
@@ -15,8 +17,37 @@ module SidekiqAutoscale
         config.strategy || :base
       end
 
+      def strategy_klass
+        @strategy_klass ||= begin
+          known_strats = [::SidekiqAutoscale::Strategies::BaseScaling.descendants << ::SidekiqAutoscale::Strategies::BaseScaling].flatten.freeze
+          strat_klass_name = known_strats.map(&:to_s).find {|i| i.end_with?("#{strategy.to_s.camelize}Scaling") }
+          if strat_klass_name.nil?
+            raise ::SidekiqAutoscale::Exception.new("#{LOG_TAG} Unknown scaling strategy: [#{strategy.to_s.camelize}Scaling]")
+          end
+
+          strat_klass_name.constantize
+        end
+      end
+
       def adapter
-        config.strategy || :nil
+        config.adapter || :nil
+      end
+
+      def adapter_klass
+        @adapter_klass ||= begin
+          known_adapters = [::SidekiqAutoscale::NilAdapter,
+                            ::SidekiqAutoscale::HerokuAdapter].freeze
+          adapter_klass_name = known_adapters.map(&:to_s).find {|i| i.end_with?("#{adapter.to_s.camelize}Adapter") }
+          if adapter_klass_name.nil?
+            raise ::SidekiqAutoscale::Exception.new("#{LOG_TAG} Unknown scaling adapter: [#{adapter.to_s.camelize}Adapter]")
+          end
+
+          adapter_klass_name.constantize.new
+        end
+      end
+
+      def adapter_config
+        config.adapter_config
       end
 
       def scale_up_threshold
@@ -48,7 +79,8 @@ module SidekiqAutoscale
       end
 
       def redis_client
-        raise SidekiqAutoscale::Exception.new("No Redis client defined") unless config.redis_client
+        raise ::SidekiqAutoscale::Exception.new("No Redis client defined") unless config.redis_client
+
         config.redis_client
       end
 
@@ -65,43 +97,43 @@ module SidekiqAutoscale
 
         config.on_scaling_error.call(e)
       end
-  
+
       def on_scaling_event(event)
         return unless config.on_scaling_event.respond_to?(:call)
 
         config.on_scaling_event.call(event)
       end
-  
-      def sidekiq_interface
-        @sidekiq_interface ||= SidekiqAutoscale::SidekiqInterface.new
-      end
 
-      def redis
-        @redis ||= ::Redis.new(url: "redis://localhost:6379")
+      def sidekiq_interface
+        @sidekiq_interface ||= ::SidekiqAutoscale::SidekiqInterface.new
       end
 
       def lock_manager
-        @lock_manager ||= ::Redlock::Client.new(redis,
+        @lock_manager ||= ::Redlock::Client.new(Array.wrap(redis_client),
                                                 retry_count:   3,
-                                                retry_delay:   200, # milliseconds
-                                                retry_jitter:  50,  # milliseconds
-                                                redis_timeout: 0.1)  # seconds)
+                                                retry_delay:   200,
+                                                retry_jitter:  50,
+                                                redis_timeout: 0.1)
       end
 
       private
 
       def validate_worker_set
-        ex_klass = SidekiqAutoscale::Exception
+        ex_klass = ::SidekiqAutoscale::Exception
         raise ex_klass.new("No max workers set") unless config.max_workers.positive?
         raise ex_klass.new("No min workers set") unless config.min_workers.positive?
-        raise ex_klass.new("Max workers must be higher than min workers") if config.max_workers.to_i < config.min_workers.to_i
+        if config.max_workers.to_i < config.min_workers.to_i
+          raise ex_klass.new("Max workers must be higher than min workers")
+        end
       end
 
       def validate_scaling_thresholds
-        ex_klass = SidekiqAutoscale::Exception
+        ex_klass = ::SidekiqAutoscale::Exception
         raise ex_klass.new("No scale up threshold set") unless config.scale_up_threshold.positive?
         raise ex_klass.new("No scale down threshold set") unless config.scale_down_threshold.positive?
-        raise ex_klass.new("Scale up threshold must be higher than scale down threshold") if config.scale_up_threshold.to_f < config.scale_down_threshold.to_f
+        if config.scale_up_threshold.to_f < config.scale_down_threshold.to_f
+          raise ex_klass.new("Scale up threshold must be higher than scale down threshold")
+        end
       end
     end
   end

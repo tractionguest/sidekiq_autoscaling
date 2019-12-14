@@ -2,8 +2,8 @@
 
 SidekiqAutoscale.configure do |config|
   config.cache = Rails.cache
-  config.logger = Rails.logger
-  config.redis = # Put a real Redis client instance here
+  config.logger = SidekiqAutoscale.logger
+  config.redis_client = Redis.new(url: "redis://localhost:6379")
   config.min_workers = 1
   config.max_workers = 20
   config.scale_down_threshold = 1.0
@@ -19,6 +19,6 @@ SidekiqAutoscale.configure do |config|
   # config.min_scaling_interval = 5.minutes.to_i
   # config.scale_by = 1
 
-  # config.on_scaling_event = Proc.new { |event| Rails.logger.info event.to_json }
-  # config.on_scaling_error = Proc.new { |error| Rails.logger.error error.to_json }
+  # config.on_scaling_event = Proc.new { |event| SidekiqAutoscale.logger.info event.to_json }
+  # config.on_scaling_error = Proc.new { |error| SidekiqAutoscale.logger.error error.to_json }
 end
