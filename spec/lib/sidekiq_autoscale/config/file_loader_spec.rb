@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Osbourne::Config::FileLoader do
+RSpec.describe SidekiqAutoscale::Config::FileLoader do
   subject(:file_loader) { described_class.load(subject_file) }
 
   context "when file does not exist" do
@@ -20,9 +20,7 @@ RSpec.describe Osbourne::Config::FileLoader do
     context "with a valid config file" do
       before { file_loader }
 
-      it { expect(Osbourne.config.sns_config[:endpoint]).to eq "http://localhost:4575" }
-      it { expect(Osbourne.config.sqs_config[:endpoint]).to eq "http://localhost:4576" }
-      it { expect(Osbourne.config.sqs_config[:verify_checksums]).to eq false }
+      it { expect(SidekiqAutoscale.config.sns_config[:endpoint]).to eq "http://localhost:4575" }
     end
   end
 end

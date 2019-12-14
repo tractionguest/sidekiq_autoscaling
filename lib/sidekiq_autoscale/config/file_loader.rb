@@ -18,7 +18,7 @@ module SidekiqAutoscale
       end
 
       def self.should_run?(cfile)
-        File.exist?(cfile) && !SidekiqAutoscale.test_mode?
+        File.exist?(cfile)
       end
     end
   end

@@ -12,11 +12,13 @@ SimpleCov.start do
   add_filter "lib/sidekiq_autoscale/railtie.rb"
 end
 
+require "sidekiq_autoscale"
 require "sidekiq_autoscale/railtie"
 require "sidekiq_autoscale/config/shared_configs"
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
+require "awesome_print"
 require "rails"
 require "redis"
 require "mock_redis"
@@ -65,8 +67,7 @@ RSpec.configure do |config|
   config.order = :random
 
   Kernel.srand config.seed
-  byebug
 
-  SidekiqAutoscale.config.cache = ActiveSupport::Cache::NullStore.new
+  # SidekiqAutoscale.config = ActiveSupport::Cache::NullStore.new
   SidekiqAutoscale.config.logger = Logger.new("log/test.log")
 end

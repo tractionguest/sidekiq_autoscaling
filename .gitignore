@@ -13,3 +13,4 @@ tmp/*
 .vscode/*
 coverage/*
 !*/.keep
+.byebug_history

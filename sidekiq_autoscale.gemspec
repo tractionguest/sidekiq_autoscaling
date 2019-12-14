@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
   s.add_dependency "sidekiq"
   s.add_dependency "thor", ">= 0.19"
 
+  s.add_development_dependency "awesome_print"
   s.add_development_dependency "bundler", "~> 1.8"
   s.add_development_dependency "guard", ">= 2"
   s.add_development_dependency "guard-bundler", ">= 2"
