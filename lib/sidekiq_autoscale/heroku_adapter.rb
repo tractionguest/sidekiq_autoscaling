@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class SidekiqAutoscaling::HerokuAdapter
+class SidekiqAutoscale::HerokuAdapter
   # HEROKU_APP_NAME is automatically set with this heroku plugin:
   # heroku labs:enable runtime-dyno-metadata
   def initialize(dyno_name: "worker",

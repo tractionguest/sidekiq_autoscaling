@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class SidekiqAutoscaling::Strategies::OldestJobScaling < SidekiqAutoscaling::BaseScaling
+class SidekiqAutoscale::Strategies::OldestJobScaling < SidekiqAutoscale::BaseScaling
   LOG_TAG = "[SIDEKIQ_SCALE][OLDEST_JOB_SCALING]"
   def workload_change_needed?(_job)
     workload_too_high? || workload_too_low?

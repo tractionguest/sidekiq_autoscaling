@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class SidekiqAutoscaling::BaseScaling
+class SidekiqAutoscale::BaseScaling
   SCALE_UP_THRESHOLD = ENV.fetch("SIDEKIQ_SCALE_UP_THRESHOLD", 5.0).to_f # 5 is just a magic number. Should be tweaked
   SCALE_DOWN_THRESHOLD = ENV.fetch("SIDEKIQ_SCALE_DOWN_THRESHOLD", 1.0).to_f # 1 is just a magic number. Should be tweaked
   attr_accessor :sidekiq_interface

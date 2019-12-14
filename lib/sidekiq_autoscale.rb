@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 require "sidekiq_autoscale/railtie"
+require "sidekiq_autoscale/config/shared_configs"
 
 module SidekiqAutoscale
-  # Your code goes here...
+  class << self
+    include SidekiqAutoscale::SharedConfigs
+  end
 end

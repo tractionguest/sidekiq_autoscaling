@@ -1,5 +1,5 @@
 
-class SidekiqAutoscaling::Strategies::DelayScaling < SidekiqAutoscaling::BaseScaling
+class SidekiqAutoscale::Strategies::DelayScaling < SidekiqAutoscale::BaseScaling
   SAMPLE_RANGE = 1.minute
   DELAY_LOG_KEY = "sidekiq_autoscaling:delay_log"
   DELAY_AVERAGE_CACHE_KEY = "sidekiq_autoscaling:delay_average"

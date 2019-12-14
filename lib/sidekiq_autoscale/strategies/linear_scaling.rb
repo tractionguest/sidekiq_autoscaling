@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class SidekiqAutoscaling::Strategies::LinearScaling < SidekiqAutoscaling::BaseScaling
+class SidekiqAutoscale::Strategies::LinearScaling < SidekiqAutoscale::BaseScaling
   LOG_TAG = "[SIDEKIQ_SCALE][LINEAR_SCALING]"
 
   def workload_change_needed?(_job)

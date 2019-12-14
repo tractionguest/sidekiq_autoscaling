@@ -1,0 +1,15 @@
+development:
+  publisher:
+    endpoint: http://localhost:4575
+  subscriber:
+    endpoint: http://localhost:4576
+    verify_checksums: false
+
+test:
+  publisher:
+    endpoint: http://localhost:4575
+  subscriber:
+    endpoint: http://localhost:4576
+    verify_checksums: false
+
+production:

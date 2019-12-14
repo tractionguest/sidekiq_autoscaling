@@ -2,7 +2,7 @@
 
 require "sidekiq/api"
 
-class SidekiqAutoscaling::SidekiqInterface
+class SidekiqAutoscale::SidekiqInterface
   class << self
     def total_queue_size
       queue_names.map {|q| ::Sidekiq::Queue.new(q).size }.reduce(0, &:+)

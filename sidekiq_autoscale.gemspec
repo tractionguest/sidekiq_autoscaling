@@ -6,33 +6,42 @@ $LOAD_PATH.push File.expand_path("lib", __dir__)
 require "sidekiq_autoscale/version"
 
 # Describe your gem and declare its dependencies:
-Gem::Specification.new do |spec|
-  spec.name        = "sidekiq_autoscale"
-  spec.version     = SidekiqAutoscale::VERSION
-  spec.authors     = ["Steven Allen"]
-  spec.email       = ["sallen@tractionguest.com"]
-  spec.homepage    = "https://github.com/tractionguest/sidekiq_autoscaling"
-  spec.summary     = "A simple gem to handle Sidekiq autoscaling."
-  spec.description = "A simple gem to handle Sidekiq autoscaling."
-  spec.license     = "MIT"
+Gem::Specification.new do |s|
+  s.name        = "sidekiq_autoscale"
+  s.version     = SidekiqAutoscale::VERSION
+  s.authors     = ["Steven Allen"]
+  s.email       = ["sallen@tractionguest.com"]
+  s.homepage    = "https://github.com/tractionguest/sidekiq_autoscaling"
+  s.summary     = "A simple gem to handle Sidekiq autoscaling."
+  s.description = "A simple gem to handle Sidekiq autoscaling."
+  s.license     = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
+  if s.respond_to?(:metadata)
+    s.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
   else
     raise "RubyGems 2.0 or newer is required to protect against " \
       "public gem pushes."
   end
 
-  spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
+  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
-  spec.add_dependency "platform-api", "~> 2.2"
-  spec.add_dependency "rails", "~> 4"
-  spec.add_dependency "redlock", "~> 1"
-  spec.add_dependency "sidekiq"
+  s.add_dependency "platform-api", "~> 2.2"
+  s.add_dependency "railties", ">= 4.2"
+  s.add_dependency "redlock", "~> 1"
+  s.add_dependency "sidekiq"
+  s.add_dependency "thor", ">= 0.19"
 
-  spec.add_development_dependency "fakeredis"
-  spec.add_development_dependency "rubocop"
-  spec.add_development_dependency "sqlite3"
+  s.add_development_dependency "bundler", "~> 1.8"
+  s.add_development_dependency "mock_redis", ">= 0.19"
+  s.add_development_dependency "guard", ">= 2"
+  s.add_development_dependency "guard-bundler", ">= 2"
+  s.add_development_dependency "guard-rspec", "~> 4.7"
+  s.add_development_dependency "rspec", ">= 3.2", "< 4"
+  s.add_development_dependency "sqlite3"
+  s.add_development_dependency "rubocop", ">= 0.50"
+  s.add_development_dependency "rubocop-rspec", "~> 1"
+  s.add_development_dependency "simplecov", "~> 0.16"
+  s.add_development_dependency "simplecov-console", "~> 0.4"
 end
