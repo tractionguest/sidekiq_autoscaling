@@ -5,6 +5,6 @@ require "sidekiq_autoscale/config/shared_configs"
 
 module SidekiqAutoscale
   class << self
-    include SidekiqAutoscale::SharedConfigs
+    include SidekiqAutoscale::Config::SharedConfigs
   end
 end

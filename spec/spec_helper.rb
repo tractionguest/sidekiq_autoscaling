@@ -20,6 +20,7 @@ $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 require "rails"
 require "redis"
 require "mock_redis"
+require "byebug"
 require "securerandom"
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -34,9 +35,6 @@ require "securerandom"
 # of increasing the boot-up time by auto-requiring all files in the support
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
-Dir[File.expand_path("spec/fixtures/**/*.rb")].each {|f| require f }
-Dir[File.expand_path("spec/support/**/*.rb")].each {|f| require f }
-Dir[File.expand_path("spec/mocks/**/*.rb")].each {|f| require f }
 Dir[File.expand_path("spec/shared_contexts/**/*.rb")].each {|f| require f }
 Dir[File.expand_path("spec/shared_examples/**/*.rb")].each {|f| require f }
 
@@ -67,6 +65,7 @@ RSpec.configure do |config|
   config.order = :random
 
   Kernel.srand config.seed
+  byebug
 
   SidekiqAutoscale.config.cache = ActiveSupport::Cache::NullStore.new
   SidekiqAutoscale.config.logger = Logger.new("log/test.log")

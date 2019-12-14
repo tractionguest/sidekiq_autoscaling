@@ -34,14 +34,15 @@ Gem::Specification.new do |s|
   s.add_dependency "thor", ">= 0.19"
 
   s.add_development_dependency "bundler", "~> 1.8"
-  s.add_development_dependency "mock_redis", ">= 0.19"
   s.add_development_dependency "guard", ">= 2"
   s.add_development_dependency "guard-bundler", ">= 2"
   s.add_development_dependency "guard-rspec", "~> 4.7"
+  s.add_development_dependency "mock_redis", ">= 0.19"
+  s.add_development_dependency "byebug"
   s.add_development_dependency "rspec", ">= 3.2", "< 4"
-  s.add_development_dependency "sqlite3"
   s.add_development_dependency "rubocop", ">= 0.50"
   s.add_development_dependency "rubocop-rspec", "~> 1"
   s.add_development_dependency "simplecov", "~> 0.16"
   s.add_development_dependency "simplecov-console", "~> 0.4"
+  s.add_development_dependency "sqlite3"
 end
