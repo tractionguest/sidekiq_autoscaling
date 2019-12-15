@@ -129,8 +129,8 @@ module SidekiqAutoscale
 
       def validate_worker_set
         ex_klass = ::SidekiqAutoscale::Exception
-        raise ex_klass.new("No max workers set") unless config.max_workers.positive?
-        raise ex_klass.new("No min workers set") unless config.min_workers.positive?
+        raise ex_klass.new("No max workers set") unless config.max_workers.to_i.positive?
+        raise ex_klass.new("No min workers set") unless config.min_workers.to_i.positive?
         if config.max_workers.to_i < config.min_workers.to_i
           raise ex_klass.new("Max workers must be higher than min workers")
         end
@@ -138,8 +138,8 @@ module SidekiqAutoscale
 
       def validate_scaling_thresholds
         ex_klass = ::SidekiqAutoscale::Exception
-        raise ex_klass.new("No scale up threshold set") unless config.scale_up_threshold.positive?
-        raise ex_klass.new("No scale down threshold set") unless config.scale_down_threshold.positive?
+        raise ex_klass.new("No scale up threshold set") unless config.scale_up_threshold.to_f.positive?
+        raise ex_klass.new("No scale down threshold set") unless config.scale_down_threshold.to_f.positive?
         if config.scale_up_threshold.to_f < config.scale_down_threshold.to_f
           raise ex_klass.new("Scale up threshold must be higher than scale down threshold")
         end

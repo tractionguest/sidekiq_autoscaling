@@ -12,14 +12,17 @@ RSpec.describe SidekiqAutoscale::Middleware, type: :model do
     }.with_indifferent_access
   }
 
-  let(:on_error_block) { proc {|_e| @error_block_fired = true } }
+  let(:on_error_block) { proc {|_| @error_block_fired = true } }
+  let(:on_event_block) { proc {|_| @event_block_fired = true } }
 
   after { TestStrategy.instance.reset }
 
   before do
     @error_block_fired = false
+    @event_block_fired = false
     SidekiqAutoscale.configure do |c|
       c.on_scaling_error = on_error_block
+      c.on_scaling_event = on_event_block
     end
   end
 
@@ -70,5 +73,6 @@ RSpec.describe SidekiqAutoscale::Middleware, type: :model do
     after { @worker_change = nil }
 
     it { expect { call_block }.to change { @worker_change } }
+    it { expect { call_block }.to change { @event_block_fired } }
   end
 end

@@ -39,6 +39,8 @@ module SidekiqAutoscale
       def set_worker_count(n, event_id: SecureRandom.hex)
         clamped = n.clamp(SidekiqAutoscale.min_workers, SidekiqAutoscale.max_workers)
 
+        SidekiqAutoscale.on_scaling_event(event_id)
+  
         SidekiqAutoscale.logger.debug <<~LOG
           #{LOG_TAG}[#{event_id}] Min workers: #{SidekiqAutoscale.min_workers}
           #{LOG_TAG}[#{event_id}] Max workers: #{SidekiqAutoscale.max_workers}
