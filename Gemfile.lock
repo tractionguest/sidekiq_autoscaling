@@ -185,7 +185,7 @@ DEPENDENCIES
   guard (>= 2)
   guard-bundler (>= 2)
   guard-rspec (~> 4.7)
-  mock_redis (>= 0.19)
+  mock_redis
   rspec (>= 3.2, < 4)
   rubocop (>= 0.50)
   rubocop-rspec (~> 1)

@@ -37,7 +37,7 @@ module SidekiqAutoscale
       def delay_average
         # Only calculate this once every minute - this operation isn't very efficient
         # We may want to offload it to another Redis DB number, which will be just delay keys
-        Rails.cache.fetch(DELAY_AVERAGE_CACHE_KEY, expires_in: SAMPLE_RANGE) do
+        SidekiqAutoscale.cache.fetch(DELAY_AVERAGE_CACHE_KEY, expires_in: SAMPLE_RANGE) do
           # Delete old scores that won't be included in the metric
           SidekiqAutoscale.redis_client.zremrangebyscore(DELAY_LOG_KEY, 0, SAMPLE_RANGE.ago.to_f)
           vals = SidekiqAutoscale.redis_client.zrange(DELAY_LOG_KEY, 0, -1).map {|i| JSON.parse(i)["delay"].to_f }

@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 class SidekiqAutoscale::HerokuAdapter
-  # HEROKU_APP_NAME is automatically set with this heroku plugin:
-  # heroku labs:enable runtime-dyno-metadata
   def initialize
+    require "platform-api"
     @app_name = SidekiqAutoscale.adapter_config[:app_name]
     @dyno_name = SidekiqAutoscale.adapter_config[:worker_dyno_name]
     @client = PlatformAPI.connect_oauth(SidekiqAutoscale.adapter_config[:api_key])
@@ -15,7 +14,7 @@ class SidekiqAutoscale::HerokuAdapter
            .map {|i| i["quantity"] }
            .reduce(0, &:+)
   rescue Excon::Errors::Error => e
-    SidekiqAutoscale.logger.error(e)
+    SidekiqAutoscale.on_scaling_error(e)
     0
   end
 
@@ -25,6 +24,6 @@ class SidekiqAutoscale::HerokuAdapter
 
     @client.formation.update(@app_name, @dyno_name, quantity: n)
   rescue Excon::Errors::Error, Heroku::API::Errors::Error => e
-    SidekiqAutoscale.logger.error(e)
+    SidekiqAutoscale.on_scaling_error(e)
   end
 end

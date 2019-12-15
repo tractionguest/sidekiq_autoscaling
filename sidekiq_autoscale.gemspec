@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "guard", ">= 2"
   s.add_development_dependency "guard-bundler", ">= 2"
   s.add_development_dependency "guard-rspec", "~> 4.7"
-  s.add_development_dependency "mock_redis", ">= 0.19"
+  s.add_development_dependency "mock_redis"
   s.add_development_dependency "byebug"
   s.add_development_dependency "rspec", ">= 3.2", "< 4"
   s.add_development_dependency "rubocop", ">= 0.50"

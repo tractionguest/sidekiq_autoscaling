@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "redlock"
-
 module SidekiqAutoscale
   module Config
     module SharedConfigs
@@ -16,7 +14,7 @@ module SidekiqAutoscale
       def strategy
         config.strategy || :base
       end
-
+  
       def strategy_klass
         @strategy_klass ||= begin
           known_strats = [::SidekiqAutoscale::Strategies::BaseScaling.descendants << ::SidekiqAutoscale::Strategies::BaseScaling].flatten.freeze
@@ -25,7 +23,7 @@ module SidekiqAutoscale
             raise ::SidekiqAutoscale::Exception.new("#{LOG_TAG} Unknown scaling strategy: [#{strategy.to_s.camelize}Scaling]")
           end
 
-          strat_klass_name.constantize
+          strat_klass_name.constantize.new
         end
       end
 
@@ -71,7 +69,7 @@ module SidekiqAutoscale
       end
 
       def scale_by
-        config.scale_by.to_i || 1
+        (config.scale_by || 1).to_i
       end
 
       def min_scaling_interval
@@ -89,19 +87,20 @@ module SidekiqAutoscale
       end
 
       def cache
-        config.cache ||= Rails.cache
+        config.cache ||= ActiveSupport::Cache::NullStore.new
       end
 
       def on_scaling_error(e)
+        logger.error(e)
         return unless config.on_scaling_error.respond_to?(:call)
 
-        config.on_scaling_error.call(e)
+        config.on_scaling_error.(e)
       end
 
       def on_scaling_event(event)
         return unless config.on_scaling_event.respond_to?(:call)
 
-        config.on_scaling_event.call(event)
+        config.on_scaling_event.(event)
       end
 
       def sidekiq_interface
@@ -109,11 +108,15 @@ module SidekiqAutoscale
       end
 
       def lock_manager
-        @lock_manager ||= ::Redlock::Client.new(Array.wrap(redis_client),
+        config.lock_manager ||= ::Redlock::Client.new(Array.wrap(redis_client),
                                                 retry_count:   3,
                                                 retry_delay:   200,
                                                 retry_jitter:  50,
                                                 redis_timeout: 0.1)
+      end
+
+      def lock_time
+        config.lock_time || 5_000
       end
 
       private

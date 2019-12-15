@@ -5,6 +5,7 @@ Bundler.setup
 
 require "simplecov"
 require "simplecov-console"
+
 (SimpleCov.formatter = SimpleCov::Formatter::Console) if ENV["CI"]
 
 SimpleCov.start do
@@ -12,18 +13,28 @@ SimpleCov.start do
   add_filter "lib/sidekiq_autoscale/railtie.rb"
 end
 
+# require "sidekiq_autoscale/railtie"
 require "sidekiq_autoscale"
-require "sidekiq_autoscale/railtie"
-require "sidekiq_autoscale/config/shared_configs"
+# require "sidekiq_autoscale/exception"
+# require "sidekiq_autoscale/sidekiq_interface"
+# require "sidekiq_autoscale/strategies/base_scaling"
+# require "sidekiq_autoscale/strategies/delay_scaling"
+# require "sidekiq_autoscale/strategies/linear_scaling"
+# require "sidekiq_autoscale/strategies/oldest_job_scaling"
+# require "sidekiq_autoscale/adapters/nil_adapter"
+# require "sidekiq_autoscale/adapters/heroku_adapter"
+# require "sidekiq_autoscale/middleware"
+require "active_support/core_ext/hash/indifferent_access"
 
-$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 require "awesome_print"
-require "rails"
-require "redis"
-require "mock_redis"
+# require "rails"
 require "byebug"
 require "securerandom"
+require 'mock_redis'
+require 'redlock/testing'
+
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -58,7 +69,7 @@ RSpec.configure do |config|
   config.filter_run_including focus: true
   config.run_all_when_everything_filtered = true
 
-  config.disable_monkey_patching!
+  # config.disable_monkey_patching!
 
   config.default_formatter = "doc" if config.files_to_run.one?
 
@@ -66,8 +77,19 @@ RSpec.configure do |config|
 
   config.order = :random
 
-  Kernel.srand config.seed
+  config.before do
+    SidekiqAutoscale.configure do |c|
+      c.scale_up_threshold = 5.0
+      c.scale_down_threshold = 1.0
+      c.max_workers = 10
+      c.min_workers = 1
+      c.redis_client = MockRedis.new
+      c.logger = ActiveSupport::Logger.new("log/test.log")
+      c.logger.level = Logger::DEBUG
+    end
+  end
 
-  # SidekiqAutoscale.config = ActiveSupport::Cache::NullStore.new
-  SidekiqAutoscale.config.logger = Logger.new("log/test.log")
+  # Redlock::Client.testing_mode.testing_mode = :bypass
+
+  Kernel.srand config.seed
 end
