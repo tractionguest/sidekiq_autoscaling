@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.shared_context "test strategy", shared_context: :metadata do
   class TestStrategy
     include Singleton
@@ -12,19 +14,19 @@ RSpec.shared_context "test strategy", shared_context: :metadata do
     def log_job(_job)
       return unless @log_job_proc.respond_to?(:call)
 
-      @log_job_proc.(_job)
+      @log_job_proc.call(_job)
     end
 
     def workload_change_needed?(_job)
       return false unless @workload_change_proc.respond_to?(:call)
 
-      @workload_change_proc.(_job)
+      @workload_change_proc.call(_job)
     end
 
     def scaling_direction(_job)
       return 0 unless @scaling_direction_proc.respond_to?(:call)
 
-      @scaling_direction_proc.(_job)
+      @scaling_direction_proc.call(_job)
     end
   end
 

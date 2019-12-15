@@ -5,7 +5,7 @@ require "rails"
 module SidekiqAutoscale
   class Railtie < ::Rails::Railtie
     config.sidekiq_autoscale = ActiveSupport::OrderedOptions.new
-    
+
     config.after_initialize do
       SidekiqAutoscale.logger.info <<~LOG
         [SIDEKIQ_SCALE] Scaling strategy: #{SidekiqAutoscale.strategy_klass.class.name}

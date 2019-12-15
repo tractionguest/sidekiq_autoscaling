@@ -35,11 +35,11 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "awesome_print"
   s.add_development_dependency "bundler", "~> 1.8"
+  s.add_development_dependency "byebug"
   s.add_development_dependency "guard", ">= 2"
   s.add_development_dependency "guard-bundler", ">= 2"
   s.add_development_dependency "guard-rspec", "~> 4.7"
   s.add_development_dependency "mock_redis"
-  s.add_development_dependency "byebug"
   s.add_development_dependency "rspec", ">= 3.2", "< 4"
   s.add_development_dependency "rubocop", ">= 0.50"
   s.add_development_dependency "rubocop-rspec", "~> 1"

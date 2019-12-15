@@ -12,14 +12,14 @@ SidekiqAutoscale.configure do |config|
 
   config.adapter = :heroku
   config.adapter_config = {
-                            api_key: "HEROKU_API_KEY", 
-                            worker_dyno_name: "DYNO_WORKER_NAME", 
-                            app_name: "HEROKU_APP_NAME"
-                          }
+    api_key:          "HEROKU_API_KEY",
+    worker_dyno_name: "DYNO_WORKER_NAME",
+    app_name:         "HEROKU_APP_NAME"
+  }
 
   config.min_scaling_interval = 5.minutes.to_i
   config.scale_by = 2
 
-  config.on_scaling_event = Proc.new { |event| ap event }
-  config.on_scaling_error = Proc.new { |error| ap error }
+  config.on_scaling_event = proc {|event| ap event }
+  config.on_scaling_error = proc {|error| ap error }
 end

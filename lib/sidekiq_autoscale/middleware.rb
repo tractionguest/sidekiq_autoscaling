@@ -8,7 +8,6 @@ module SidekiqAutoscale
     WORKER_COUNT_KEY = "sidekiq_autoscaling/current_worker_count"
 
     class << self
-
       # @param [Object] worker the worker instance
       # @param [Hash] job the full job payload
       #   * @see https://github.com/mperham/sidekiq/wiki/Job-Format

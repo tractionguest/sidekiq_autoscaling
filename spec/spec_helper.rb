@@ -26,13 +26,12 @@ require "sidekiq_autoscale"
 # require "sidekiq_autoscale/middleware"
 require "active_support/core_ext/hash/indifferent_access"
 
-
 require "awesome_print"
 # require "rails"
 require "byebug"
 require "securerandom"
-require 'mock_redis'
-require 'redlock/testing'
+require "mock_redis"
+require "redlock/testing"
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 

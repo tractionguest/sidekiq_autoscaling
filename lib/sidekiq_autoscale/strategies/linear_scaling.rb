@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module SidekiqAutoscale
   module Strategies
     class LinearScaling < BaseScaling

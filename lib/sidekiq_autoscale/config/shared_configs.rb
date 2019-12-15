@@ -3,7 +3,7 @@
 module SidekiqAutoscale
   module Config
     module SharedConfigs
-      LOG_TAG = "[SIDEKIQ_SCALING]".freeze
+      LOG_TAG = "[SIDEKIQ_SCALING]"
 
       attr_writer :config
 
@@ -14,7 +14,7 @@ module SidekiqAutoscale
       def strategy
         config.strategy || :base
       end
-  
+
       def strategy_klass
         @strategy_klass ||= begin
           known_strats = [::SidekiqAutoscale::Strategies::BaseScaling.descendants << ::SidekiqAutoscale::Strategies::BaseScaling].flatten.freeze
@@ -94,13 +94,13 @@ module SidekiqAutoscale
         logger.error(e)
         return unless config.on_scaling_error.respond_to?(:call)
 
-        config.on_scaling_error.(e)
+        config.on_scaling_error.call(e)
       end
 
       def on_scaling_event(event)
         return unless config.on_scaling_event.respond_to?(:call)
 
-        config.on_scaling_event.(event)
+        config.on_scaling_event.call(event)
       end
 
       def sidekiq_interface
@@ -109,10 +109,10 @@ module SidekiqAutoscale
 
       def lock_manager
         config.lock_manager ||= ::Redlock::Client.new(Array.wrap(redis_client),
-                                                retry_count:   3,
-                                                retry_delay:   200,
-                                                retry_jitter:  50,
-                                                redis_timeout: 0.1)
+                                                      retry_count:   3,
+                                                      retry_delay:   200,
+                                                      retry_jitter:  50,
+                                                      redis_timeout: 0.1)
       end
 
       def lock_time
