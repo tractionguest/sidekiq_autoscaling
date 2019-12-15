@@ -16,7 +16,6 @@ module SidekiqAutoscale
       # @return [Void]
       def call(_worker_class, job, _queue)
         SidekiqAutoscale.strategy_klass.log_job(job) # In case the scaling strategy needs to record job-specific stuff before it runs
-        delayed_by_seconds = Time.current - Time.at(job["created_at"]) # We can also record this in Librato
         yield # Run the job, THEN scale the cluster
         begin
           return unless SidekiqAutoscale.strategy_klass.workload_change_needed?(job)
@@ -73,8 +72,6 @@ module SidekiqAutoscale
 
           SidekiqAutoscale.logger.debug("#{LOG_TAG}[#{event_id}] RELEASING LOCK #{locked}") if locked
           SidekiqAutoscale.logger.info("#{LOG_TAG}[#{event_id}] --- END ---")
-        rescue StandardError => e
-          byebug
         end
       end
     end

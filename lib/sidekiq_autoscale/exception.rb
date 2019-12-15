@@ -1,4 +1,6 @@
 # frozen_string_literal: true
 
-class SidekiqAutoscale::Exception < StandardError
+module SidekiqAutoscale
+  class Exception < ::StandardError
+  end
 end

@@ -16,10 +16,10 @@ RSpec.shared_context "test adapter", shared_context: :metadata do
       @get_worker_count_proc.call
     end
 
-    def worker_count=(n)
-      return false unless @set_worker_count_proc.respond_to?(:call)
+    def worker_count=(val)
+      return unless @set_worker_count_proc.respond_to?(:call)
 
-      @set_worker_count_proc.call(n)
+      @set_worker_count_proc.call(val)
     end
   end
 

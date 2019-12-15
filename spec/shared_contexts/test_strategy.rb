@@ -11,22 +11,22 @@ RSpec.shared_context "test strategy", shared_context: :metadata do
       @scaling_direction_proc = false
     end
 
-    def log_job(_job)
+    def log_job(job)
       return unless @log_job_proc.respond_to?(:call)
 
-      @log_job_proc.call(_job)
+      @log_job_proc.call(job)
     end
 
-    def workload_change_needed?(_job)
+    def workload_change_needed?(job)
       return false unless @workload_change_proc.respond_to?(:call)
 
-      @workload_change_proc.call(_job)
+      @workload_change_proc.call(job)
     end
 
-    def scaling_direction(_job)
+    def scaling_direction(job)
       return 0 unless @scaling_direction_proc.respond_to?(:call)
 
-      @scaling_direction_proc.call(_job)
+      @scaling_direction_proc.call(job)
     end
   end
 

@@ -9,6 +9,7 @@ AllCops:
   TargetRubyVersion: 2.6
 
 Metrics/LineLength:
+  IgnoredPatterns: ['\.logger\.']
   IgnoreCopDirectives: true
   Max: 120
 

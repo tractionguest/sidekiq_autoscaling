@@ -61,13 +61,9 @@ RSpec.describe SidekiqAutoscale::Middleware, type: :model do
     include_context "test adapter"
     before do
       @worker_change = 0
-      Redlock::Client.testing_mode.testing_mode = :bypass
       TestStrategy.instance.workload_change_proc = proc {|_| true }
       TestStrategy.instance.scaling_direction_proc = proc {|_| 1 }
-      TestAdapter.instance.set_worker_count_proc = proc {|n|
-        byebug
-        @worker_change = n
-      }
+      TestAdapter.instance.set_worker_count_proc = proc {|n| @worker_change = n }
       TestAdapter.instance.get_worker_count_proc = proc { 1 }
     end
 

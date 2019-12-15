@@ -13,6 +13,7 @@ SimpleCov.start do
   add_filter "lib/sidekiq_autoscale/railtie.rb"
 end
 
+# require "redlock/testing"
 # require "sidekiq_autoscale/railtie"
 require "sidekiq_autoscale"
 # require "sidekiq_autoscale/exception"
@@ -86,9 +87,10 @@ RSpec.configure do |config|
       c.logger = ActiveSupport::Logger.new("log/test.log")
       c.logger.level = Logger::DEBUG
     end
+    SidekiqAutoscale.lock_manager.testing_mode = :bypass
   end
 
-  # Redlock::Client.testing_mode.testing_mode = :bypass
+  # Redlock::Client.try_lock_instances_without_testing = true
 
   Kernel.srand config.seed
 end
