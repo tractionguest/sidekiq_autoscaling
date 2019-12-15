@@ -17,7 +17,13 @@ module SidekiqAutoscale
 
       def strategy_klass
         @strategy_klass ||= begin
-          known_strats = [::SidekiqAutoscale::Strategies::BaseScaling.descendants << ::SidekiqAutoscale::Strategies::BaseScaling].flatten.freeze
+          known_strats = [
+            ::SidekiqAutoscale::Strategies::BaseScaling,
+            ::SidekiqAutoscale::Strategies::DelayScaling,
+            ::SidekiqAutoscale::Strategies::OldestJobScaling,
+            ::SidekiqAutoscale::Strategies::LinearScaling
+
+          ]
           strat_klass_name = known_strats.map(&:to_s).find {|i| i.end_with?("#{strategy.to_s.camelize}Scaling") }
           if strat_klass_name.nil?
             raise ::SidekiqAutoscale::Exception.new("#{LOG_TAG} Unknown scaling strategy: [#{strategy.to_s.camelize}Scaling]")

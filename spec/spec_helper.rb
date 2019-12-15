@@ -28,7 +28,7 @@ require "sidekiq_autoscale"
 require "active_support/core_ext/hash/indifferent_access"
 
 require "awesome_print"
-# require "rails"
+require "rails"
 require "byebug"
 require "securerandom"
 require "mock_redis"
