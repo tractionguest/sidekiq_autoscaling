@@ -17,7 +17,6 @@ require "sidekiq_autoscale/config/shared_configs"
 
 module SidekiqAutoscale
   class << self
-    puts "Lefty loader"
     include SidekiqAutoscale::Config::SharedConfigs
 
     def configure

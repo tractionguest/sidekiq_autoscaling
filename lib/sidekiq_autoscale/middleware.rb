@@ -39,20 +39,6 @@ module SidekiqAutoscale
       def set_worker_count(n, event_id: SecureRandom.hex)
         clamped = n.clamp(SidekiqAutoscale.min_workers, SidekiqAutoscale.max_workers)
 
-        SidekiqAutoscale.on_scaling_event(event_id)
-  
-        SidekiqAutoscale.logger.debug <<~LOG
-          #{LOG_TAG}[#{event_id}] Min workers: #{SidekiqAutoscale.min_workers}
-          #{LOG_TAG}[#{event_id}] Max workers: #{SidekiqAutoscale.max_workers}
-          #{LOG_TAG}[#{event_id}] Unclamped target workers: #{n}
-        LOG
-
-        SidekiqAutoscale.logger.info <<~LOG
-          #{LOG_TAG}[#{event_id}] --- START ---
-          Current number of workers: #{worker_count}
-          New number of workers: #{clamped}
-        LOG
-
         SidekiqAutoscale.lock_manager.lock(SCALING_LOCK_KEY, SidekiqAutoscale.lock_time) do |locked|
           # Not awesome, but gotta handle the initial nil case
           last_scaled_at = SidekiqAutoscale.redis_client.get(LAST_SCALED_AT_EVENT_KEY).to_f
@@ -61,19 +47,22 @@ module SidekiqAutoscale
             Last scaled [#{Time.current.to_i - last_scaled_at.to_i}] seconds ago"
             Scaling every [#{SidekiqAutoscale.min_scaling_interval}] seconds"
           LOG
-          # byebug
 
           if locked && (last_scaled_at < SidekiqAutoscale.min_scaling_interval.seconds.ago.to_f)
-            SidekiqAutoscale.logger.debug("#{LOG_TAG}[#{event_id}] ***SCALING!!!***")
             SidekiqAutoscale.adapter_klass.worker_count = clamped
             SidekiqAutoscale.cache.delete(WORKER_COUNT_KEY)
             SidekiqAutoscale.redis_client.set(LAST_SCALED_AT_EVENT_KEY, Time.current.to_f)
+            SidekiqAutoscale.on_scaling_event(
+              target_workers:       clamped,
+              event_id:             event_id,
+              current_worker_count: worker_count,
+              last_scaled_at:       last_scaled_at
+            )
           else
             SidekiqAutoscale.logger.debug("#{LOG_TAG}[#{event_id}] ***NOT SCALING***")
           end
 
           SidekiqAutoscale.logger.debug("#{LOG_TAG}[#{event_id}] RELEASING LOCK #{locked}") if locked
-          SidekiqAutoscale.logger.info("#{LOG_TAG}[#{event_id}] --- END ---")
         end
       end
     end

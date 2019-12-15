@@ -13,7 +13,7 @@ RSpec.describe SidekiqAutoscale::Config::SharedConfigs, type: :model do
     SidekiqAutoscale.instance_variable_set(:@adapter_klass, nil)
     SidekiqAutoscale.instance_variable_set(:@strategy_klass, nil)
   end
-  
+
   it { expect(config.strategy_klass).to be_kind_of(::SidekiqAutoscale::Strategies::BaseScaling) }
   it { expect(config.adapter_klass).to be_kind_of(::SidekiqAutoscale::NilAdapter) }
   it { expect(config.scale_up_threshold).to be_kind_of(::Float) }

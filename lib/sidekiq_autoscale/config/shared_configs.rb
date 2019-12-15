@@ -104,9 +104,11 @@ module SidekiqAutoscale
       end
 
       def on_scaling_event(event)
+        details = config.to_h.slice(:strategy, :adapter, :scale_up_threshold, :scale_down_threshold, :max_workers, :min_workers, :scale_by, :min_scaling_interval)
+        logger.info(details)
         return unless config.on_scaling_event.respond_to?(:call)
 
-        config.on_scaling_event.call(event)
+        config.on_scaling_event.call(details.merge(event))
       end
 
       def sidekiq_interface
@@ -128,6 +130,8 @@ module SidekiqAutoscale
       private
 
       def validate_worker_set
+        return unless Rails.env.production?
+
         ex_klass = ::SidekiqAutoscale::Exception
         raise ex_klass.new("No max workers set") unless config.max_workers.to_i.positive?
         raise ex_klass.new("No min workers set") unless config.min_workers.to_i.positive?
@@ -137,6 +141,8 @@ module SidekiqAutoscale
       end
 
       def validate_scaling_thresholds
+        return unless Rails.env.production?
+
         ex_klass = ::SidekiqAutoscale::Exception
         raise ex_klass.new("No scale up threshold set") unless config.scale_up_threshold.to_f.positive?
         raise ex_klass.new("No scale down threshold set") unless config.scale_down_threshold.to_f.positive?
