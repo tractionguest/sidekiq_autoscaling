@@ -21,13 +21,13 @@ module SidekiqAutoscale
       # Remove available threads from total queue size in case there's pending
       # tasks that are still spinning up,
       def scheduled_jobs_per_thread
-        ((@sidekiq_interface.total_queue_size - @sidekiq_interface.available_threads).to_f / @sidekiq_interface.total_threads.to_f)
+        ((SidekiqAutoscale.sidekiq_interface.total_queue_size - SidekiqAutoscale.sidekiq_interface.available_threads).to_f / SidekiqAutoscale.sidekiq_interface.total_threads.to_f)
       end
 
       def workload_too_high?
         too_high = scheduled_jobs_per_thread > SidekiqAutoscale.scale_up_threshold
         if too_high
-          SidekiqAutoscale.logger.info("#{LOG_TAG} Workload too low [Scheduled: #{scheduled_jobs_per_thread}, Max: #{scale_up_threshold}]")
+          SidekiqAutoscale.logger.info("#{LOG_TAG} Workload too low [Scheduled: #{scheduled_jobs_per_thread}, Max: #{SidekiqAutoscale.scale_up_threshold}]")
         end
         too_high
       end
@@ -35,7 +35,7 @@ module SidekiqAutoscale
       def workload_too_low?
         too_low = scheduled_jobs_per_thread < SidekiqAutoscale.scale_down_threshold
         if too_low
-          SidekiqAutoscale.logger.info("#{LOG_TAG} Workload too low [Scheduled: #{scheduled_jobs_per_thread}, Min: #{scale_down_threshold}]")
+          SidekiqAutoscale.logger.info("#{LOG_TAG} Workload too low [Scheduled: #{scheduled_jobs_per_thread}, Min: #{SidekiqAutoscale.scale_down_threshold}]")
         end
         too_low
       end
