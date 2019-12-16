@@ -3,7 +3,7 @@
 SidekiqAutoscale.configure do |config|
   config.cache = Rails.cache
   config.logger = Rails.logger
-  config.redis = # Put a real Redis client instance here
+  config.redis_client = # Put a real Redis client instance here
 
   # Number of workers will never go below this threshold
   config.min_workers = 1

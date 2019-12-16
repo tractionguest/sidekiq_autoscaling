@@ -11,6 +11,8 @@ require "simplecov-console"
 SimpleCov.start do
   add_filter "spec/"
   add_filter "lib/sidekiq_autoscale/railtie.rb"
+  add_filter "lib/generators/sidekiq_autoscale/install/install_generator.rb"
+  add_filter "lib/sidekiq_autoscale/adapters/nil_adapter.rb"
 end
 
 # require "redlock/testing"
@@ -33,6 +35,7 @@ require "byebug"
 require "securerandom"
 require "mock_redis"
 require "redlock/testing"
+require "webmock/rspec"
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
