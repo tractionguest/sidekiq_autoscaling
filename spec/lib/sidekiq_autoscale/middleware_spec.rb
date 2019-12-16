@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe SidekiqAutoscale::Middleware, type: :model do
   include_context "test strategy"
-  subject { described_class }
+  subject { described_class.new }
   let(:job) {
     {
       "created_at": Time.current.to_i,
