@@ -53,16 +53,16 @@ module SidekiqAutoscale
       end
 
       def workload_too_high?
-        too_high = delay_average > @scale_up_threshold
+        too_high = delay_average > SidekiqAutoscale.scale_up_threshold
         SidekiqAutoscale.logger.info("#{LOG_TAG} Workload too high") if too_high
-        SidekiqAutoscale.logger.debug("#{LOG_TAG} Current average delay: #{delay_average}, max allowed: #{@scale_up_threshold}")
+        SidekiqAutoscale.logger.debug("#{LOG_TAG} Current average delay: #{delay_average}, max allowed: #{SidekiqAutoscale.scale_up_threshold}")
         too_high
       end
 
       def workload_too_low?
-        too_low = delay_average < @scale_down_threshold
+        too_low = delay_average < SidekiqAutoscale.scale_down_threshold
         SidekiqAutoscale.logger.info("#{LOG_TAG} Workload too low") if too_low
-        SidekiqAutoscale.logger.debug("#{LOG_TAG} Current average delay: #{delay_average}, min allowed: #{@scale_down_threshold}")
+        SidekiqAutoscale.logger.debug("#{LOG_TAG} Current average delay: #{delay_average}, min allowed: #{SidekiqAutoscale.scale_down_threshold}")
         too_low
       end
 

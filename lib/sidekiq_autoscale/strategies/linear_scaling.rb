@@ -25,7 +25,7 @@ module SidekiqAutoscale
       end
 
       def workload_too_high?
-        too_high = scheduled_jobs_per_thread > @scale_up_threshold
+        too_high = scheduled_jobs_per_thread > SidekiqAutoscale.scale_up_threshold
         if too_high
           SidekiqAutoscale.logger.info("#{LOG_TAG} Workload too low [Scheduled: #{scheduled_jobs_per_thread}, Max: #{scale_up_threshold}]")
         end
@@ -33,7 +33,7 @@ module SidekiqAutoscale
       end
 
       def workload_too_low?
-        too_low = scheduled_jobs_per_thread < @scale_down_threshold
+        too_low = scheduled_jobs_per_thread < SidekiqAutoscale.scale_down_threshold
         if too_low
           SidekiqAutoscale.logger.info("#{LOG_TAG} Workload too low [Scheduled: #{scheduled_jobs_per_thread}, Min: #{scale_down_threshold}]")
         end

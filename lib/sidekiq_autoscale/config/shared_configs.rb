@@ -61,7 +61,7 @@ module SidekiqAutoscale
 
       def scale_down_threshold
         validate_scaling_thresholds
-        config.scale_up_threshold.to_f
+        config.scale_down_threshold.to_f
       end
 
       def max_workers
