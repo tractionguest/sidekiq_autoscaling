@@ -55,27 +55,23 @@ module SidekiqAutoscale
       end
 
       def scale_up_threshold
-        validate_scaling_thresholds
-        config.scale_up_threshold.to_f
+        (config.scale_up_threshold || ENV.fetch('SIDEKIQ_AUTOSCALE_UP_THRESHOLD', 5.0)).to_f
       end
 
       def scale_down_threshold
-        validate_scaling_thresholds
-        config.scale_down_threshold.to_f
+        (config.scale_down_threshold || ENV.fetch('SIDEKIQ_AUTOSCALE_DOWN_THRESHOLD', 1.0)).to_f
       end
 
       def max_workers
-        validate_worker_set
-        config.max_workers.to_i
+        (config.max_workers || ENV.fetch('SIDEKIQ_AUTOSCALE_MAX_WORKERS', 10)).to_i
       end
 
       def min_workers
-        validate_worker_set
-        config.min_workers.to_i
+        (config.min_workers || ENV.fetch('SIDEKIQ_AUTOSCALE_MIN_WORKERS', 1)).to_i
       end
 
       def scale_by
-        (config.scale_by || 1).to_i
+        (config.scale_by || ENV.fetch('SIDEKIQ_AUTOSCALE_SCALE_BY', 1)).to_i
       end
 
       def min_scaling_interval
@@ -130,8 +126,6 @@ module SidekiqAutoscale
       private
 
       def validate_worker_set
-        return unless Rails.env.production?
-
         ex_klass = ::SidekiqAutoscale::Exception
         raise ex_klass.new("No max workers set") unless config.max_workers.to_i.positive?
         raise ex_klass.new("No min workers set") unless config.min_workers.to_i.positive?
@@ -141,8 +135,6 @@ module SidekiqAutoscale
       end
 
       def validate_scaling_thresholds
-        return unless Rails.env.production?
-
         ex_klass = ::SidekiqAutoscale::Exception
         raise ex_klass.new("No scale up threshold set") unless config.scale_up_threshold.to_f.positive?
         raise ex_klass.new("No scale down threshold set") unless config.scale_down_threshold.to_f.positive?
