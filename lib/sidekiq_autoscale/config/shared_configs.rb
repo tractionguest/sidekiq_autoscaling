@@ -55,23 +55,35 @@ module SidekiqAutoscale
       end
 
       def scale_up_threshold
-        (config.scale_up_threshold || ENV.fetch('SIDEKIQ_AUTOSCALE_UP_THRESHOLD', 5.0)).to_f
+        @scale_up_threshold ||= begin
+          validate_scaling_thresholds
+          validated_scale_up_threshold
+        end
       end
 
       def scale_down_threshold
-        (config.scale_down_threshold || ENV.fetch('SIDEKIQ_AUTOSCALE_DOWN_THRESHOLD', 1.0)).to_f
+        @scale_down_threshold ||= begin
+          validate_scaling_thresholds
+          validated_scale_down_threshold
+        end
       end
 
       def max_workers
-        (config.max_workers || ENV.fetch('SIDEKIQ_AUTOSCALE_MAX_WORKERS', 10)).to_i
+        @max_workers ||= begin
+          validate_worker_set
+          validated_max_workers
+        end
       end
 
       def min_workers
-        (config.min_workers || ENV.fetch('SIDEKIQ_AUTOSCALE_MIN_WORKERS', 1)).to_i
+        @min_workers ||= begin
+          validate_worker_set
+          validated_min_workers
+        end
       end
 
       def scale_by
-        (config.scale_by || ENV.fetch('SIDEKIQ_AUTOSCALE_SCALE_BY', 1)).to_i
+        (config.scale_by || ENV.fetch("SIDEKIQ_AUTOSCALE_SCALE_BY", 1)).to_i
       end
 
       def min_scaling_interval
@@ -101,7 +113,6 @@ module SidekiqAutoscale
 
       def on_scaling_event(event)
         details = config.to_h.slice(:strategy, :adapter, :scale_up_threshold, :scale_down_threshold, :max_workers, :min_workers, :scale_by, :min_scaling_interval)
-        logger.info(details)
         return unless config.on_scaling_event.respond_to?(:call)
 
         config.on_scaling_event.call(details.merge(event))
@@ -127,20 +138,36 @@ module SidekiqAutoscale
 
       def validate_worker_set
         ex_klass = ::SidekiqAutoscale::Exception
-        raise ex_klass.new("No max workers set") unless config.max_workers.to_i.positive?
-        raise ex_klass.new("No min workers set") unless config.min_workers.to_i.positive?
-        if config.max_workers.to_i < config.min_workers.to_i
+        raise ex_klass.new("No max workers set") unless validated_max_workers.positive?
+        raise ex_klass.new("No min workers set") unless validated_min_workers.positive?
+        if validated_max_workers < validated_min_workers
           raise ex_klass.new("Max workers must be higher than min workers")
         end
       end
 
       def validate_scaling_thresholds
         ex_klass = ::SidekiqAutoscale::Exception
-        raise ex_klass.new("No scale up threshold set") unless config.scale_up_threshold.to_f.positive?
-        raise ex_klass.new("No scale down threshold set") unless config.scale_down_threshold.to_f.positive?
-        if config.scale_up_threshold.to_f < config.scale_down_threshold.to_f
+        raise ex_klass.new("No scale up threshold set") unless validated_scale_up_threshold.positive?
+        raise ex_klass.new("No scale down threshold set") unless validated_scale_down_threshold.positive?
+        if validated_scale_up_threshold < validated_scale_down_threshold
           raise ex_klass.new("Scale up threshold must be higher than scale down threshold")
         end
+      end
+
+      def validated_scale_up_threshold
+        (config.scale_up_threshold || ENV.fetch("SIDEKIQ_AUTOSCALE_UP_THRESHOLD", 5.0)).to_f
+      end
+
+      def validated_scale_down_threshold
+        (config.scale_down_threshold || ENV.fetch("SIDEKIQ_AUTOSCALE_DOWN_THRESHOLD", 1.0)).to_f
+      end
+
+      def validated_max_workers
+        (config.max_workers || ENV.fetch("SIDEKIQ_AUTOSCALE_MAX_WORKERS", 10)).to_i
+      end
+
+      def validated_min_workers
+        (config.min_workers || ENV.fetch("SIDEKIQ_AUTOSCALE_MIN_WORKERS", 1)).to_i
       end
     end
   end

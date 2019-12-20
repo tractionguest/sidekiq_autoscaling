@@ -20,9 +20,9 @@ module SidekiqAutoscale
     end
 
     def worker_count=(val)
-      SidekiqAutoscale.logger.info("[SIDEKIQ_SCALE][HEROKU_ACTION] Setting new worker count to #{val} (is currenly #{worker_count})")
       return if val == worker_count
 
+      SidekiqAutoscale.logger.info("[SIDEKIQ_SCALE][HEROKU_ACTION] Setting new worker count to #{val} (is currenly #{worker_count})")
       @client.formation.update(@app_name, @dyno_name, quantity: val)
     rescue Excon::Errors::Error, Heroku::API::Errors::Error => e
       SidekiqAutoscale.on_scaling_error(e)
