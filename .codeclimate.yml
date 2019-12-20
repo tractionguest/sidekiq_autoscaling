@@ -1,6 +1,12 @@
 ---
   version: "2"
   plugins:
+    brakeman:
+      enabled: true
+    flog:
+      enabled: true
+    reek:
+      enabled: true
     rubocop:
       enabled: true
       channel: rubocop-0-74 # Minimum version to support ruby 2.6
