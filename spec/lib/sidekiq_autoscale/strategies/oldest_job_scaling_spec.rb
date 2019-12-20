@@ -38,6 +38,6 @@ RSpec.describe SidekiqAutoscale::Strategies::OldestJobScaling, type: :model do
     let(:current_oldest_job) { scale_down_at / 2 }
 
     it { expect(strategy.workload_change_needed?(nil)).to eq true }
-    it { expect(strategy.scaling_direction(nil)).to eq -1 }
+    it { expect(strategy.scaling_direction(nil)).to eq(-1) }
   end
 end

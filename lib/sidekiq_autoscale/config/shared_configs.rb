@@ -26,7 +26,9 @@ module SidekiqAutoscale
           ]
           strat_klass_name = known_strats.map(&:to_s).find {|i| i.end_with?("#{strategy.to_s.camelize}Scaling") }
           if strat_klass_name.nil?
-            raise ::SidekiqAutoscale::Exception.new("#{LOG_TAG} Unknown scaling strategy: [#{strategy.to_s.camelize}Scaling]")
+            raise ::SidekiqAutoscale::Exception.new <<~LOG
+              #{LOG_TAG} Unknown scaling strategy: [#{strategy.to_s.camelize}Scaling]")
+            LOG
           end
 
           strat_klass_name.constantize.new
