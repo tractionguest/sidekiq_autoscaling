@@ -4,7 +4,7 @@ AllCops:
   Exclude:
     - 'vendor/**/*'
     - 'bin/**/*'
-    - 'test/**/*'
+    - 'spec/**/*'
     - 'Guardfile'
   TargetRubyVersion: 2.6
 
@@ -143,8 +143,14 @@ Metrics/BlockLength:
   Exclude:
     - 'Rakefile'
     - '**/*.rake'
-    - 'test/**/*.rb'
+    - 'spec/**/*.rb'
 
 Metrics/ModuleLength:
   Exclude:
-    - 'test/**/*.rb'
+    - 'spec/**/*.rb'
+    - 'lib/sidekiq_autoscale/config/shared_configs.rb'
+
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - "spec/**/*"
+    

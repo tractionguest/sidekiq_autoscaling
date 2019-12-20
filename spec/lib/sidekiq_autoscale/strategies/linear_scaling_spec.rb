@@ -55,6 +55,6 @@ RSpec.describe SidekiqAutoscale::Strategies::LinearScaling, type: :model do
     let(:total_threads) { 2 }
 
     it { expect(strategy.workload_change_needed?(nil)).to eq true }
-    it { expect(strategy.scaling_direction(nil)).to eq -1 }
+    it { expect(strategy.scaling_direction(nil)).to eq(-1) }
   end
 end

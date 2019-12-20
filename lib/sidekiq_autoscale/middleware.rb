@@ -14,7 +14,8 @@ module SidekiqAutoscale
     # @yield the next middleware in the chain or worker `perform` method
     # @return [Void]
     def call(_worker_class, job, _queue)
-      SidekiqAutoscale.strategy_klass.log_job(job) # In case the scaling strategy needs to record job-specific stuff before it runs
+      # In case the scaling strategy needs to record job-specific stuff before it runs
+      SidekiqAutoscale.strategy_klass.log_job(job)
       yield # Run the job, THEN scale the cluster
       begin
         return unless SidekiqAutoscale.strategy_klass.workload_change_needed?(job)
