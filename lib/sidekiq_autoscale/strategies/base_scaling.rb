@@ -13,6 +13,16 @@ module SidekiqAutoscale
       def scaling_direction(_job)
         0
       end
+
+      private
+
+      def scale_up_threshold
+        SidekiqAutoscale.scale_up_threshold
+      end
+
+      def scale_down_threshold
+        SidekiqAutoscale.scale_down_threshold
+      end
     end
   end
 end
