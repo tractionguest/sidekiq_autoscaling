@@ -3,7 +3,7 @@
 module SidekiqAutoscale
   class NilAdapter
     def initialize
-      @sidekiq_adapter = SidekiqAutoscale::SidekiqInterface
+      @sidekiq_adapter = ::SidekiqAutoscale::SidekiqInterface.new
     end
 
     def worker_count
