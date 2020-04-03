@@ -3,8 +3,6 @@
 module SidekiqAutoscale
   module Config
     module SharedConfigs
-      # include Callbacks
-
       LOG_TAG = "[SIDEKIQ_SCALING]"
 
       attr_writer :config
@@ -101,7 +99,6 @@ module SidekiqAutoscale
       end
 
       def logger
-        byebug unless (config.logger ||= Rails.logger)
         config.logger ||= Rails.logger
       end
 
