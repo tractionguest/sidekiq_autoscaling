@@ -13,6 +13,7 @@ require "sidekiq_autoscale/strategies/oldest_job_scaling"
 require "sidekiq_autoscale/adapters/nil_adapter"
 require "sidekiq_autoscale/adapters/heroku_adapter"
 require "sidekiq_autoscale/middleware"
+require "sidekiq_autoscale/config/callbacks"
 require "sidekiq_autoscale/config/shared_configs"
 
 module SidekiqAutoscale
