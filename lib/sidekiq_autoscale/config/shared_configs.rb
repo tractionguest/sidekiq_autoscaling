@@ -125,8 +125,8 @@ module SidekiqAutoscale
                                     :scale_by,
                                     :min_scaling_interval)
 
-        on_head_bump(details.merge(event)) if event[:target_workers] == config.max_workers
-        on_toe_stub(details.merge(event)) if event[:target_workers] == config.min_workers
+        on_head_bump(details.merge(event)) if event[:target_workers] == max_workers
+        on_toe_stub(details.merge(event)) if event[:target_workers] == min_workers
 
         return unless config.on_scaling_event.respond_to?(:call)
 

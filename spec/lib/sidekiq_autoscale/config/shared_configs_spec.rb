@@ -12,7 +12,6 @@ RSpec.describe SidekiqAutoscale::Config::SharedConfigs, type: :model do
     SidekiqAutoscale.config.min_workers = 1.0
     SidekiqAutoscale.instance_variable_set(:@adapter_klass, nil)
     SidekiqAutoscale.instance_variable_set(:@strategy_klass, nil)
-
   end
 
   it { expect(config.strategy_klass).to be_kind_of(::SidekiqAutoscale::Strategies::BaseScaling) }
