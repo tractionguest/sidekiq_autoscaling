@@ -20,8 +20,10 @@ module SidekiqAutoscale
       begin
         return unless SidekiqAutoscale.strategy_klass.workload_change_needed?(job)
 
-        new_worker_count = worker_count + (SidekiqAutoscale.scale_by * SidekiqAutoscale.strategy_klass.scaling_direction(job))
-        set_worker_count(new_worker_count, event_id: job["jid"])
+        direction = SidekiqAutoscale.strategy_klass.scaling_direction(job)
+        new_worker_count = worker_count + (SidekiqAutoscale.scale_by * direction)
+
+        set_worker_count(new_worker_count, event_id: job["jid"], direction: direction)
       rescue StandardError => e
         SidekiqAutoscale.logger.error(e)
         SidekiqAutoscale.on_scaling_error(e)
@@ -36,7 +38,7 @@ module SidekiqAutoscale
       end
     end
 
-    def set_worker_count(n, event_id: SecureRandom.hex)
+    def set_worker_count(n, event_id: SecureRandom.hex, direction:)
       clamped = n.clamp(SidekiqAutoscale.min_workers, SidekiqAutoscale.max_workers)
 
       SidekiqAutoscale.lock_manager.lock(SCALING_LOCK_KEY, SidekiqAutoscale.lock_time) do |locked|
@@ -53,6 +55,7 @@ module SidekiqAutoscale
           SidekiqAutoscale.cache.delete(WORKER_COUNT_KEY)
           SidekiqAutoscale.redis_client.set(LAST_SCALED_AT_EVENT_KEY, Time.current.to_f)
           SidekiqAutoscale.on_scaling_event(
+            direction:            direction,
             target_workers:       clamped,
             event_id:             event_id,
             current_worker_count: worker_count,

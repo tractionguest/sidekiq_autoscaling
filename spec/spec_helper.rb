@@ -84,7 +84,7 @@ RSpec.configure do |config|
     SidekiqAutoscale.configure do |c|
       c.scale_up_threshold = 5.0
       c.scale_down_threshold = 1.0
-      c.max_workers = 10
+      c.max_workers = 2
       c.min_workers = 1
       c.redis_client = MockRedis.new
       c.logger = ActiveSupport::Logger.new("log/test.log")

@@ -58,14 +58,14 @@ module SidekiqAutoscale
       end
 
       def scale_up_threshold
-        @scale_up_threshold ||= begin
+        config.scale_up_threshold ||= begin
           validate_scaling_thresholds
           validated_scale_up_threshold
         end
       end
 
       def scale_down_threshold
-        @scale_down_threshold ||= begin
+        config.scale_down_threshold ||= begin
           validate_scaling_thresholds
           validated_scale_down_threshold
         end
@@ -115,10 +115,33 @@ module SidekiqAutoscale
       end
 
       def on_scaling_event(event)
-        details = config.to_h.slice(:strategy, :adapter, :scale_up_threshold, :scale_down_threshold, :max_workers, :min_workers, :scale_by, :min_scaling_interval)
+        details = config.to_h.slice(:strategy,
+                                    :adapter,
+                                    :scale_up_threshold,
+                                    :scale_down_threshold,
+                                    :max_workers,
+                                    :min_workers,
+                                    :scale_by,
+                                    :min_scaling_interval)
+
+        on_head_bump(details.merge(event)) if event[:target_workers] == max_workers
+        on_toe_stub(details.merge(event)) if event[:target_workers] == min_workers
+
         return unless config.on_scaling_event.respond_to?(:call)
 
         config.on_scaling_event.call(details.merge(event))
+      end
+
+      def on_head_bump(event)
+        return unless config.on_head_bump.respond_to?(:call)
+
+        config.on_head_bump.call(event)
+      end
+
+      def on_toe_stub(event)
+        return unless config.on_toe_stub.respond_to?(:call)
+
+        config.on_toe_stub.call(event)
       end
 
       def sidekiq_interface

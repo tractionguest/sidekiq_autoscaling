@@ -15,14 +15,21 @@ RSpec.describe SidekiqAutoscale::Middleware, type: :model do
   let(:on_error_block) { proc {|_| @error_block_fired = true } }
   let(:on_event_block) { proc {|_| @event_block_fired = true } }
 
+  let(:on_head_bump) { proc {|_| @on_head_bump_fired = true } }
+  let(:on_toe_stub) { proc {|_| @on_toe_stub_fired = true } }
+
   after { TestStrategy.instance.reset }
 
   before do
     @error_block_fired = false
     @event_block_fired = false
+    @head_bump_fired = false
+    @toe_stub_fired = false
     SidekiqAutoscale.configure do |c|
       c.on_scaling_error = on_error_block
       c.on_scaling_event = on_event_block
+      c.on_head_bump = on_head_bump
+      c.on_toe_stub = on_toe_stub
     end
   end
 
@@ -74,5 +81,23 @@ RSpec.describe SidekiqAutoscale::Middleware, type: :model do
 
     it { expect { call_block }.to change { @worker_change } }
     it { expect { call_block }.to change { @event_block_fired } }
+    it { expect { call_block }.to change { @on_head_bump_fired } }
+  end
+
+  context "when scaling strategy requires scaling down" do
+    include_context "test adapter"
+    before do
+      @worker_change = 0
+      TestStrategy.instance.workload_change_proc = proc {|_| true }
+      TestStrategy.instance.scaling_direction_proc = proc {|_| -1 }
+      TestAdapter.instance.set_worker_count_proc = proc {|n| @worker_change = n }
+      TestAdapter.instance.get_worker_count_proc = proc { 1 }
+    end
+
+    after { @worker_change = nil }
+
+    it { expect { call_block }.to change { @worker_change } }
+    it { expect { call_block }.to change { @event_block_fired } }
+    it { expect { call_block }.to change { @on_toe_stub_fired } }
   end
 end
