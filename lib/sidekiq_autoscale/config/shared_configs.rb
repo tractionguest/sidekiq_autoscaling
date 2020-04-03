@@ -59,14 +59,14 @@ module SidekiqAutoscale
       end
 
       def scale_up_threshold
-        @scale_up_threshold ||= begin
+        config.scale_up_threshold ||= begin
           validate_scaling_thresholds
           validated_scale_up_threshold
         end
       end
 
       def scale_down_threshold
-        @scale_down_threshold ||= begin
+        config.scale_down_threshold ||= begin
           validate_scaling_thresholds
           validated_scale_down_threshold
         end
@@ -101,6 +101,7 @@ module SidekiqAutoscale
       end
 
       def logger
+        byebug unless (config.logger ||= Rails.logger)
         config.logger ||= Rails.logger
       end
 
