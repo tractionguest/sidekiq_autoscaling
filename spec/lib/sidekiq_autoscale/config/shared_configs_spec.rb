@@ -5,13 +5,10 @@ require "spec_helper"
 RSpec.describe SidekiqAutoscale::Config::SharedConfigs, type: :model do
   subject(:config) { SidekiqAutoscale }
   before do
-    SidekiqAutoscale.config = ActiveSupport::OrderedOptions.new
     SidekiqAutoscale.config.scale_up_threshold = 1.0
     SidekiqAutoscale.config.scale_down_threshold = 1.0
     SidekiqAutoscale.config.max_workers = 1.0
     SidekiqAutoscale.config.min_workers = 1.0
-    SidekiqAutoscale.instance_variable_set(:@adapter_klass, nil)
-    SidekiqAutoscale.instance_variable_set(:@strategy_klass, nil)
   end
 
   after { SidekiqAutoscale.config = ActiveSupport::OrderedOptions.new }

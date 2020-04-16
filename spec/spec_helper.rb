@@ -93,6 +93,13 @@ RSpec.configure do |config|
     SidekiqAutoscale.lock_manager.testing_mode = :bypass
   end
 
+  config.after do
+    # Blank out whatever configs are set in the tests
+    SidekiqAutoscale.instance_variables.each do |var|
+      SidekiqAutoscale.instance_variable_set(var, nil)
+    end
+  end
+
   # Redlock::Client.try_lock_instances_without_testing = true
 
   Kernel.srand config.seed

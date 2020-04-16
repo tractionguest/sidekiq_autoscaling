@@ -21,7 +21,8 @@ module SidekiqAutoscale
             ::SidekiqAutoscale::Strategies::BaseScaling,
             ::SidekiqAutoscale::Strategies::DelayScaling,
             ::SidekiqAutoscale::Strategies::OldestJobScaling,
-            ::SidekiqAutoscale::Strategies::LinearScaling
+            ::SidekiqAutoscale::Strategies::LinearScaling,
+            ::SidekiqAutoscale::Strategies::DynamicLatencyScaling
 
           ]
           strat_klass_name = known_strats.map(&:to_s).find {|i| i.end_with?("#{strategy.to_s.camelize}Scaling") }

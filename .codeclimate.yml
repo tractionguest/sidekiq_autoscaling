@@ -5,6 +5,8 @@
       enabled: true
     reek:
       enabled: true
+      exclude_fingerprints:
+        - d2c73a6a49652488ddee439854b48a69
     rubocop:
       enabled: true
       channel: rubocop-0-74 # Minimum version to support ruby 2.6
