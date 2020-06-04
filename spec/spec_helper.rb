@@ -90,7 +90,8 @@ RSpec.configure do |config|
       c.logger = ActiveSupport::Logger.new("log/test.log")
       c.logger.level = Logger::DEBUG
     end
-    SidekiqAutoscale.lock_manager.testing_mode = :bypass
+    Redlock::Client.testing_mode = :bypass
+    # SidekiqAutoscale.lock_manager.testing_mode = :bypass
   end
 
   config.after do

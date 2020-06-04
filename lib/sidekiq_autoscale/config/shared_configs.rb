@@ -58,31 +58,31 @@ module SidekiqAutoscale
       end
 
       def scale_up_threshold
-        config.scale_up_threshold ||= begin
+        (config.scale_up_threshold ||= begin
           validate_scaling_thresholds
           validated_scale_up_threshold
-        end
+        end).to_f
       end
 
       def scale_down_threshold
-        config.scale_down_threshold ||= begin
+        (config.scale_down_threshold ||= begin
           validate_scaling_thresholds
           validated_scale_down_threshold
-        end
+        end).to_f
       end
 
       def max_workers
-        @max_workers ||= begin
+        (@max_workers ||= begin
           validate_worker_set
           validated_max_workers
-        end
+        end).to_i
       end
 
       def min_workers
-        @min_workers ||= begin
+        (@min_workers ||= begin
           validate_worker_set
           validated_min_workers
-        end
+        end).to_i
       end
 
       def scale_by
