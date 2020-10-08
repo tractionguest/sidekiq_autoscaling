@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sidekiq_autoscale (0.1.1)
+    sidekiq_autoscale (0.2.0)
       k8s-ruby
       platform-api (~> 2.2)
       railties (>= 4.2)
