@@ -36,6 +36,7 @@ require "securerandom"
 require "mock_redis"
 require "redlock/testing"
 require "webmock/rspec"
+require "k8s-ruby"
 
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 

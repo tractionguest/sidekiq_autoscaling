@@ -86,6 +86,10 @@ SidekiqAutoscale.configure do |config|
                             worker_dyno_name: "DYNO_WORKER_NAME", 
                             app_name: "HEROKU_APP_NAME"
                           }
+  # Kubernetes requires the following:
+  config.adapter_config = {
+                            deployment_name: "myapp-sidekiq", 
+                          }
 
   # The minimum amount of time to wait between scaling events
   # Useful to tweak based on how long it takes for a new worker
@@ -103,6 +107,49 @@ SidekiqAutoscale.configure do |config|
   # config.on_scaling_error = Proc.new { |error| Rails.logger.error error.to_json }
 end
 ```
+
+## Kubernetes
+
+This gem can scale a Kubernetes `Deployment` object that Sidekiq is running in.
+
+Doing so requires the following RBAC config:
+
+```
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: myapp-sidekiq
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "update"]
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: sidekiq
+subjects:
+  - kind: ServiceAccount
+    name: myapp-sidekiq
+roleRef:
+  kind: Role
+  name: myapp-sidekiq
+  apiGroup: rbac.authorization.k8s.io
+
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: myapp-sidekiq
+```
+
+Then assign your sidekiq deployment the `myapp-sidekiq` service account.
 
 ## License
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).

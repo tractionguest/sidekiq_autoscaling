@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
+  s.add_dependency "k8s-ruby"
   s.add_dependency "platform-api", "~> 2.2"
   s.add_dependency "railties", ">= 4.2"
   s.add_dependency "redlock", "~> 1"

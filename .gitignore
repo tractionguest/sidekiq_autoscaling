@@ -15,3 +15,5 @@ coverage/*
 !*/.keep
 .byebug_history
 *.gem
+.idea
+.idea/**

@@ -43,7 +43,8 @@ module SidekiqAutoscale
       def adapter_klass
         @adapter_klass ||= begin
           known_adapters = [::SidekiqAutoscale::NilAdapter,
-                            ::SidekiqAutoscale::HerokuAdapter].freeze
+                            ::SidekiqAutoscale::HerokuAdapter,
+                            ::SidekiqAutoscale::KubernetesAdapter].freeze
           adapter_klass_name = known_adapters.map(&:to_s).find {|i| i.end_with?("#{adapter.to_s.camelize}Adapter") }
           if adapter_klass_name.nil?
             raise ::SidekiqAutoscale::Exception.new("#{LOG_TAG} Unknown scaling adapter: [#{adapter.to_s.camelize}Adapter]")
