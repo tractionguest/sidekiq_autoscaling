@@ -122,12 +122,9 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: myapp-sidekiq
 rules:
-  - apiGroups: [""]
-    resources: ["pods"]
-    verbs: ["list"]
   - apiGroups: ["apps"]
     resources: ["deployments"]
-    verbs: ["get", "list", "update"]
+    verbs: ["get", "patch"]
 
 ---
 kind: RoleBinding

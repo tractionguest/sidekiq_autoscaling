@@ -34,7 +34,7 @@ RSpec.describe SidekiqAutoscale::KubernetesAdapter, type: :model do
     allow(client_double).to receive(:api).with("apps/v1").and_return(k8s_api_call)
     allow(k8s_api_call).to receive(:resource).and_return(k8s_resources)
     allow(k8s_resources).to receive(:get).and_return(deployment_object)
-    allow(k8s_resources).to receive(:update).and_return(deployment_object)
+    allow(k8s_resources).to receive(:merge_patch)
   end
 
   before do
@@ -42,9 +42,8 @@ RSpec.describe SidekiqAutoscale::KubernetesAdapter, type: :model do
         .to_return(body: deployment_object.to_json,
                    headers: {"Content-Type" => "application/json"})
 
-    stub_request(:put, "#{deployments_uri}/#{deployment_name}")
-        .to_return(body: deployment_object.to_json,
-                   headers: {"Content-Type" => "application/json"},
+    stub_request(:post, "#{deployments_uri}/#{deployment_name}")
+        .to_return(headers: {"Content-Type" => "application/json"},
                    status: 200)
   end
 
@@ -70,8 +69,7 @@ RSpec.describe SidekiqAutoscale::KubernetesAdapter, type: :model do
 
     before do
       stub_request(:get, "#{deployments_uri}/#{deployment_name}")
-          .to_return(body: deployment_object.json,
-                     headers: {"Content-Type" => "application/json"},
+          .to_return(headers: {"Content-Type" => "application/json"},
                      status: 403)
     end
 
